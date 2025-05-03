@@ -13,6 +13,8 @@ Searches for emails, phone numbers, NI numbers, SSNs and other PII using precomp
 Integrates cleanly with MongoDB for structured, timestamped, deduplicated storage
 
 💡 Why Use This?
+
+
 ✅ Skip massive prebuilt wordlists or unstructured scrapes
 
 ✅ Inject target-specific intelligence with scoped crawl configs
