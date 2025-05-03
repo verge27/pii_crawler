@@ -1,98 +1,79 @@
-How to Use This Spider
-Set up a Scrapy Project: If you haven't already, create a Scrapy project:
+📡 pii_crawler: A Legally-Conscious Web Crawler for PII Discovery
+pii_crawler is a modular, ethics-first Scrapy framework designed to identify potentially sensitive personal information (PII) in web content — within legal boundaries and defined scopes.
 
-scrapy startproject mycrawler
-cd mycrawler
+Built for security engineers, compliance teams, and privacy-aware developers.
 
-Save the Spider: Save the Python code above into the spiders directory within your project (e.g., mycrawler/spiders/pii_crawler.py). Make sure the name attribute (web_crawler) is unique within your project's spiders.
+🔍 What It Does
+Crawls only explicitly allowed domains
 
-Install Dependencies:
+Honors robots.txt and enforces strict domain constraints
 
-pip install scrapy pymongo dnspython # dnspython is often needed for mongodb+srv URIs
+Searches for emails, phone numbers, NI numbers, SSNs, and other PII using precompiled regexes
 
-Configure settings.py: This is the most important step. Open the settings.py file located in your Scrapy project's root directory (mycrawler/settings.py) and add or modify the following settings:
+Integrates cleanly with MongoDB for structured, timestamped, deduplicated storage
 
-# settings.py
+💡 Why Use This?
+✅ Skip massive prebuilt wordlists or unstructured scrapes
 
-BOT_NAME = 'mycrawler' # Or your project name
-SPIDER_MODULES = ['mycrawler.spiders']
-NEWSPIDER_MODULE = 'mycrawler.spiders'
+✅ Inject target-specific intelligence with scoped crawl configs
 
-# --- USER AGENT ---
-# Be polite: identify your bot. Replace with your project info.
-USER_AGENT = 'MyWebCrawler (+http://www.mywebsite.com/botinfo)' # CHANGE THIS
+✅ Pipe directly into security workflows or audits
 
-# --- ROBOTS.TXT ---
-# Set to False ONLY if you have explicit permission AND understand the risks.
-ROBOTSTXT_OBEY = True
+✅ Respect bandwidth and rate limits with built-in throttling and AutoDelay
 
-# --- MONGODB CONFIGURATION ---
-# *** REPLACE with your actual MongoDB connection string ***
-# Example for local: "mongodb://localhost:27017/"
-# Example for Atlas: "mongodb+srv://<username>:<password>@<cluster-url>/<dbname>?retryWrites=true&w=majority"
-MONGO_URI = "mongodb://localhost:27017/"
-MONGO_DATABASE = "web_crawler_db"        # Choose a database name
-MONGO_COLLECTION = "personal_info_collection" # Choose a collection name
+⚙️ Installation
+bash
+Copy
+Edit
+git clone https://github.com/your-repo/pii_crawler.git
+cd pii_crawler
+pip install -r requirements.txt
+🚀 Usage
+1. Configure the target domain
+Edit allowed_domains and start_urls in spiders/pii_spider.py.
 
-# --- CRAWL SCOPE CONFIGURATION ---
-# *** REPLACE with the actual URL(s) you want to start crawling from ***
-START_URLS = ["http://example.com"] # Must be a list
-# *** REPLACE with the domain(s) you are legally permitted to crawl ***
-# The spider will NOT follow links outside these domains.
-ALLOWED_DOMAINS = ["example.com"]   # Must be a list
+2. Crawl and discover
+bash
+Copy
+Edit
+scrapy crawl pii_spider
+3. Review Results
+Data will be stored in your configured MongoDB instance, including:
 
-# --- DELAY AND THROTTLING (Highly Recommended) ---
-# Be kind to the servers you are crawling. Start with conservative values.
-DOWNLOAD_DELAY = 1 # Time in seconds between requests to the same domain
-# CONCURRENT_REQUESTS_PER_DOMAIN = 8 # Max concurrent requests to any single domain
-# CONCURRENT_REQUESTS = 16 # Max concurrent requests overall
+Match type
 
-# AutoThrottle adjusts delays based on server load (Recommended)
-AUTOTHROTTLE_ENABLED = True
-AUTOTHROTTLE_START_DELAY = 1 # Initial download delay
-AUTOTHROTTLE_MAX_DELAY = 60 # Maximum download delay to be set in case of high latencies
-AUTOTHROTTLE_TARGET_CONCURRENCY = 1.0 # Aim for this average number of parallel requests; lower is gentler
-# AUTOTHROTTLE_DEBUG = False # Set True to see throttling stats
+Match content
 
-# --- LOGGING ---
-LOG_LEVEL = 'INFO' # Options: 'CRITICAL', 'ERROR', 'WARNING', 'INFO', 'DEBUG'
-# LOG_FILE = 'scrapy_crawl.log' # Uncomment to log to a file instead of/besides console
+Source URL
 
-# --- Optional: Item Pipelines ---
-# For more complex data processing/validation/storage, consider using Item Pipelines.
-# ITEM_PIPELINES = {
-#    'mycrawler.pipelines.MongoPipeline': 300,
-# }
+Timestamp
 
-Run the Spider: Open your terminal, navigate to the project's root directory (mycrawler), and run:
+🧠 Regex Coverage (Default)
+Emails
 
-scrapy crawl web_crawler
+UK NI numbers
 
-(Replace web_crawler if you changed the name attribute in the spider).
+US SSNs
 
-Summary of Changes and Improvements:
-Configuration: Moved MongoDB URI, database/collection names, start URLs, and allowed domains to settings.py for easy management.
+Phone numbers
 
-from_crawler: Used the standard Scrapy method to initialize the spider with settings and connect signals.
+Credit card patterns (with false-positive filtering)
 
-MongoDB Handling: Robust connection setup with error handling and timeout. Connection is cleanly closed when the spider stops using signals.spider_closed.
+You can extend these in regex_patterns.py.
 
-Link Extraction: Switched to LinkExtractor for more reliable and configurable link finding, automatically respecting allowed_domains and ignoring common non-HTML file types.
+🔐 Legal & Ethical Disclaimer
+This tool is built for internal audits, red-team simulations, and research within authorized domains only.
 
-Error Handling: Added try...except blocks for MongoDB operations, regex extraction, and link following. Implemented errback for handling request errors.
+❗ Does not bypass robots.txt
 
-Logging: Integrated standard Scrapy logging (self.logger) with appropriate levels (DEBUG, INFO, WARNING, ERROR). PII findings are logged as WARNING.
+❗ Will not crawl or scrape without explicit config
 
-Data Storage: Uses update_one with upsert=True to avoid duplicate entries for the same URL, storing the latest findings. Added timestamp and source domain to stored data.
+❗ Built-in compliance warnings flag dangerous usage
 
-Regex: Pre-compiled regex patterns for efficiency. Added re.IGNORECASE where applicable. Slightly refined NI number regex. (Note: PII regex is inherently complex and imperfect).
+⚠️ You are responsible for ensuring all use complies with local laws and ethical standards.
 
-Clarity & Warnings: Added extensive comments explaining the code and critical warnings regarding the ethical and legal responsibilities of scraping PII.
+🤝 Contribute
+Open to forks, pull requests, regex improvements, and feedback from the community.
 
-Code Structure: Improved organization and adherence to Scrapy conventions.
+If you're a privacy engineer, infosec researcher, or curious builder — this one’s for you.
 
-Timestamping: Added a timestamp for when data was retrieved.
-
-Standalone Runner (for testing): Included an if __name__ == '__main__': block for basic testing outside a full project, though running via scrapy crawl is standard practice.
-
-Again, proceed with extreme caution if you intend to use this for scraping anything resembling personal information. Ensure full legal compliance and ethical justification.
