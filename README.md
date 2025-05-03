@@ -1,14 +1,14 @@
 📡 pii_crawler: A Legally-Conscious Web Crawler for PII Discovery
 pii_crawler is a modular, ethics-first Scrapy framework designed to identify potentially sensitive personal information (PII) in web content — within legal boundaries and defined scopes.
 
-Built for security engineers, compliance teams, and privacy-aware developers.
+Built for security engineers, compliance teams and privacy-aware developers.
 
 🔍 What It Does
 Crawls only explicitly allowed domains
 
 Honors robots.txt and enforces strict domain constraints
 
-Searches for emails, phone numbers, NI numbers, SSNs, and other PII using precompiled regexes
+Searches for emails, phone numbers, NI numbers, SSNs and other PII using precompiled regexes
 
 Integrates cleanly with MongoDB for structured, timestamped, deduplicated storage
 
@@ -73,7 +73,7 @@ This tool is built for internal audits, red-team simulations, and research withi
 ⚠️ You are responsible for ensuring all use complies with local laws and ethical standards.
 
 🤝 Contribute
-Open to forks, pull requests, regex improvements, and feedback from the community.
+Open to forks, pull requests, regex improvements and feedback from the community.
 
-If you're a privacy engineer, infosec researcher, or curious builder — this one’s for you.
+If you're a privacy engineer, infosec researcher or curious builder — this one’s for you.
 
